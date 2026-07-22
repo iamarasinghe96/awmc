@@ -188,27 +188,20 @@
   .stage .slide{max-width:26ch;margin:auto 0;animation:slideIn .28s cubic-bezier(.2,.7,.3,1);}
   @keyframes slideIn{from{opacity:0;transform:translateY(14px) scale(.985);}to{opacity:1;transform:none;}}
   .slide-q{
-    font-size:clamp(27px,4.6vw,46px);line-height:1.16;font-weight:750;
+    font-size:clamp(25px,4.3vw,43px);line-height:1.16;font-weight:750;
     letter-spacing:-.5px;margin:0 auto;max-width:22ch;
     text-shadow:0 2px 18px rgba(0,0,0,.18);
   }
-  .reveal-btn{
-    margin:34px auto 0;font-family:inherit;font-weight:700;font-size:16px;
-    min-height:var(--tap);padding:12px 24px;border-radius:999px;cursor:pointer;
-    border:1.5px solid rgba(244,241,233,.55);background:rgba(255,255,255,.08);
-    color:#f4f1e9;touch-action:manipulation;
-    transition:transform .06s ease,background .15s ease;
-  }
-  .reveal-btn:active{transform:scale(.96);}
   .slide-a{
-    margin:26px auto 0;max-width:30ch;font-size:clamp(17px,2.7vw,23px);
-    line-height:1.5;color:#eaf3ec;font-weight:500;
-    background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.12);
-    border-radius:14px;padding:16px 18px;
-    animation:reveal .3s ease;
+    margin:30px auto 0;max-width:32ch;font-size:clamp(17px,2.7vw,23px);
+    line-height:1.5;color:#f4f1e9;font-weight:500;
+    background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.14);
+    border-radius:16px;padding:18px 20px;
   }
-  .slide-a.hidden{display:none;}
-  @keyframes reveal{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .slide-a .a-label{
+    display:block;font-size:12px;font-weight:750;letter-spacing:1.5px;text-transform:uppercase;
+    color:#9ed3ac;margin-bottom:7px;
+  }
   .stage .hint{
     position:absolute;bottom:14px;left:0;right:0;
     font-size:12.5px;color:rgba(244,241,233,.55);letter-spacing:.3px;
@@ -396,26 +389,26 @@
       "There is a clear message staff wish every resident understood."
     ],
     fun: [
-      { q:"Be honest… does a greasy pizza box go in the yellow bin?",
-        a:"Nope — the greasy half ruins the batch. Clean cardboard recycles; oily cardboard goes to FOGO or red." },
-      { q:"I bag up my recycling nice and neat first — employee of the month, right?",
-        a:"Please stop 😅 — bagged recycling often goes straight to landfill because sorters can't open every bag." },
-      { q:"Takeaway coffee cup — recyclable, obviously?",
-        a:"Sadly no — the plastic lining is fused to the paper. Cup goes in red; the lid might be recyclable." },
-      { q:"Soft plastics — bread bags, cling wrap — yellow bin, yeah?",
-        a:"No! They tangle the machines and shut the line down. If you can scrunch it, it doesn't go in yellow." },
-      { q:"Come on… does the yellow bin stuff ACTUALLY get recycled?",
-        a:"Yes — when it's clean. Right now nearly 1 in 5 items in Albury yellow bins is contaminated and gets dumped." },
-      { q:"Surely one dirty item can't ruin a whole truckload?",
-        a:"Oh it can. One leaking bottle or bag of nappies can send an entire load to landfill." },
-      { q:"Where does my red bin ACTUALLY end up?",
+      { q:"Friday-night pizza box, one corner still dripping with cheesy grease… straight in the yellow bin, yeah? 🍕",
+        a:"Nope — that greasy half ruins the whole batch. Clean cardboard recycles; oily, cheesy cardboard goes in FOGO or the red bin." },
+      { q:"I tie my recycling up in a nice neat plastic bag first — go on, employee of the month, right? 🏅",
+        a:"Please don't! 😅 Bagged recycling often heads straight to landfill — sorters can't rip open every mystery bag. Tip it in loose." },
+      { q:"That glorious takeaway coffee cup you had this morning — 100% recyclable, obviously… right? ☕",
+        a:"Sadly no — the plastic lining is fused to the paper. The cup goes in the red bin; the lid might be recyclable." },
+      { q:"Bread bags, chip packets, cling wrap — all the scrunchy stuff — yellow bin, easy… yeah? 🛍️",
+        a:"No! Soft plastics tangle the machines and shut the whole line down. The rule: if you can scrunch it, it doesn't go in yellow." },
+      { q:"Alright, be honest — does the yellow bin ACTUALLY get recycled, or is it all one big conspiracy? 🕵️",
+        a:"It's real — when it's clean. Right now nearly 1 in 5 items in Albury yellow bins is contaminated and gets dumped." },
+      { q:"Surely one manky little item can't ruin a whole truckload… can it? 😬",
+        a:"Oh, it can. One leaking bottle or a single bag of nappies can send an entire load to landfill." },
+      { q:"Your red bin gets wheeled out on bin night and vanishes… where does it ACTUALLY end up? 🚛",
         a:"Straight to landfill, right here. Red-bin waste is 55% of everything we bury." },
-      { q:"Empty peanut butter jar — recyclable, right?",
-        a:"Yes! But rinse it first. A crusty half-full jar is contamination; ten seconds under the tap fixes it. 🏆" },
-      { q:"What's the WEIRDEST thing you've pulled out of a recycling bin?",
-        a:"(Let them tell you — this one gets the biggest laugh.)" },
-      { q:"What's the ONE thing you wish everyone knew about your job?",
-        a:"(Warm closer — let each person answer honestly.)" }
+      { q:"Empty peanut butter jar — okay, still a LITTLE peanut buttery — chuck it in recycling, right? 🥜",
+        a:"Yes! But rinse it first. A crusty half-full jar is contamination; ten seconds under the tap and it's good to go. 🏆" },
+      { q:"Go on, have a guess — what's the WEIRDEST thing we pull out of Albury recycling bins? 👀",
+        a:"You name it, we've seen it — garden hoses, nappies, car parts, even the kitchen sink. Golden rule: if in doubt, leave it out!" },
+      { q:"Last one: if you could shout ONE thing to every household in Albury, what would it be? 📣",
+        a:"Keep the yellow bin clean and loose — no bags, no food, no wishful thinking. That one habit keeps good recycling out of landfill. That's on all of us. 🌏" }
     ]
   };
 
@@ -623,7 +616,7 @@
 
   /* ---------------- Render: Fun slideshow ---------------- */
   var slideIndex = 0;
-  var stageEl, slideQEl, slideAEl, revealBtn, progressEl, prevBtn, nextBtn;
+  var stageEl, slideQEl, slideAEl, slideALabel, progressEl, prevBtn, nextBtn;
   function renderFun(){
     var host = document.getElementById("fun");
 
@@ -636,26 +629,19 @@
 
     var slide = el("div","slide");
     slideQEl = el("div","slide-q");
-    revealBtn = document.createElement("button");
-    revealBtn.type = "button";
-    revealBtn.className = "reveal-btn";
-    revealBtn.textContent = "Reveal answer";
-    slideAEl = el("div","slide-a hidden");
+    slideAEl = el("div","slide-a");
+    slideALabel = el("span","a-label"); slideALabel.textContent = "The answer";
+    var aText = el("span","a-text");
+    slideAEl.appendChild(slideALabel);
+    slideAEl.appendChild(aText);
+    slideAEl._text = aText;
     slide.appendChild(slideQEl);
-    slide.appendChild(revealBtn);
     slide.appendChild(slideAEl);
     stageEl.appendChild(slide);
 
     var hint = el("div","hint");
-    hint.textContent = "Tap right → next · tap left ← back · reveal the answer below";
+    hint.textContent = "Tap right → next · tap left ← back";
     stageEl.appendChild(hint);
-
-    // reveal toggle
-    revealBtn.addEventListener("click", function(ev){
-      ev.stopPropagation();
-      toggleReveal();
-    });
-    slideAEl.addEventListener("click", function(ev){ ev.stopPropagation(); });
 
     // tap zones on the stage
     stageEl.addEventListener("click", function(ev){
@@ -684,11 +670,6 @@
     b.textContent = text;
     return b;
   }
-  function toggleReveal(){
-    var hidden = slideAEl.classList.toggle("hidden");
-    revealBtn.textContent = hidden ? "Reveal answer" : "Hide answer";
-    revealBtn.setAttribute("aria-expanded", hidden ? "false" : "true");
-  }
   function go(dir){
     var n = slideIndex + dir;
     if(n < 0 || n > QUESTIONS.fun.length - 1) return;
@@ -698,10 +679,7 @@
     slideIndex = n;
     var item = QUESTIONS.fun[n];
     slideQEl.textContent = item.q;
-    slideAEl.textContent = item.a;
-    slideAEl.classList.add("hidden");
-    revealBtn.textContent = "Reveal answer";
-    revealBtn.setAttribute("aria-expanded","false");
+    slideAEl._text.textContent = item.a;
     progressEl.textContent = (n+1) + " / " + QUESTIONS.fun.length;
     prevBtn.disabled = (n === 0);
     nextBtn.disabled = (n === QUESTIONS.fun.length - 1);
@@ -839,9 +817,8 @@
   // keyboard arrows advance the slideshow when it's on screen
   document.addEventListener("keydown", function(ev){
     if(!document.body.classList.contains("mode-fun")) return;
-    if(ev.key === "ArrowRight"){ go(1); }
+    if(ev.key === "ArrowRight" || ev.key === " " || ev.key === "Enter"){ go(1); ev.preventDefault(); }
     else if(ev.key === "ArrowLeft"){ go(-1); }
-    else if(ev.key === " " || ev.key === "Enter"){ /* reveal on space */ toggleReveal(); ev.preventDefault(); }
   });
 
   /* ---------------- Export ---------------- */

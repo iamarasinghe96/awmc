@@ -1,7 +1,7 @@
 /* AWMC Site Visit Questionnaire — offline service worker.
    Caches the whole app shell on install so it launches with no network.
    Bump CACHE version whenever any cached file changes. */
-var CACHE = "awmc-visit-v2";
+var CACHE = "awmc-visit-v3";
 var ASSETS = [
   "./",
   "./index.html",
