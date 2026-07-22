@@ -1,0 +1,815 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4a7c59">
+<meta name="description" content="Offline site-visit questionnaire for the Albury Waste Management Centre (AWMC / Halve Waste).">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="AWMC Visit">
+<title>AWMC Site Visit</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" href="./favicon-32.png">
+<style>
+  :root{
+    --bg:#f4f1e9;
+    --bg-2:#ece7da;
+    --surface:#fffdf7;
+    --surface-2:#faf7ef;
+    --ink:#2b2e29;
+    --ink-soft:#5f6459;
+    --ink-faint:#8b9083;
+    --line:#e4dfd0;
+    --line-strong:#d3cdba;
+    --green:#4a7c59;
+    --green-d:#2f5d3f;
+    --green-l:#6fa080;
+    --green-tint:#e7efe8;
+    --green-tint-2:#d8e6dc;
+    --amber:#b7791f;
+    --radius:16px;
+    --radius-sm:11px;
+    --tap:46px;
+    --maxw:780px;
+    --safe-b:env(safe-area-inset-bottom, 0px);
+    --safe-t:env(safe-area-inset-top, 0px);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Helvetica Neue",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{
+    font-family:var(--font);
+    color:var(--ink);
+    background:var(--bg);
+    -webkit-text-size-adjust:100%;
+    -webkit-tap-highlight-color:transparent;
+    overscroll-behavior-y:contain;
+    line-height:1.45;
+  }
+  .app{
+    display:flex;
+    flex-direction:column;
+    min-height:100%;
+    min-height:100dvh;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    display:flex;align-items:center;gap:12px;
+    padding:calc(10px + var(--safe-t)) 16px 10px;
+    background:rgba(244,241,233,0.92);
+    -webkit-backdrop-filter:saturate(1.2) blur(8px);
+    backdrop-filter:saturate(1.2) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .brand{display:flex;align-items:center;gap:10px;min-width:0;}
+  .topbar .dot{width:22px;height:22px;border-radius:7px;flex:0 0 auto;
+    background:linear-gradient(160deg,var(--green-l),var(--green-d));}
+  .topbar h1{font-size:17px;margin:0;font-weight:650;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .topbar .sub{font-size:12.5px;color:var(--ink-soft);margin-top:1px;white-space:nowrap;}
+  .spacer{flex:1 1 auto;}
+  .actions{display:flex;gap:8px;}
+  .btn{
+    font-family:inherit;font-size:14px;font-weight:600;
+    min-height:var(--tap);padding:0 14px;
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    border-radius:var(--radius-sm);border:1px solid var(--line-strong);
+    background:var(--surface);color:var(--ink);cursor:pointer;
+    touch-action:manipulation;transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn.primary{background:var(--green);border-color:var(--green);color:#fff;}
+  .btn.ghost{background:transparent;border-color:transparent;color:var(--green-d);}
+  .btn.danger{color:#8f3a3a;border-color:#e6d3cf;background:#fbf4f2;}
+  .btn svg{width:17px;height:17px;flex:0 0 auto;}
+  body.mode-fun .actions{display:none;}
+
+  /* ---------- Content ---------- */
+  .content{flex:1 1 auto;display:flex;flex-direction:column;padding:18px 16px 26px;}
+  .wrap{max-width:var(--maxw);margin:0 auto;}
+  .section{display:none;}
+  .section.active{display:block;animation:fade .18s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+  .intro{color:var(--ink-soft);font-size:15px;margin:0 2px 18px;max-width:60ch;}
+  .intro b{color:var(--green-d);font-weight:650;}
+
+  .card{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--radius);padding:18px 18px 16px;margin:0 0 16px;
+    box-shadow:0 1px 2px rgba(60,55,35,.04);
+  }
+  .q-head{display:flex;gap:12px;align-items:baseline;margin-bottom:12px;}
+  .q-num{flex:0 0 auto;font-weight:700;color:var(--green);font-size:15px;
+    background:var(--green-tint);border-radius:8px;padding:3px 9px;line-height:1.2;}
+  .q-text{margin:0;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:.1px;}
+
+  /* Scale */
+  .scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:4px 0 16px;}
+  .scale-opt{
+    font-family:inherit;font-size:13px;font-weight:600;line-height:1.2;
+    min-height:var(--tap);padding:8px 6px;cursor:pointer;
+    border-radius:var(--radius-sm);border:1.5px solid var(--line-strong);
+    background:var(--surface-2);color:var(--ink-soft);
+    touch-action:manipulation;transition:background .14s ease,border-color .14s ease,color .14s ease,transform .06s ease;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+  }
+  .scale-opt:active{transform:scale(.97);}
+  .scale-opt[aria-checked="true"]{
+    background:var(--green);border-color:var(--green);color:#fff;
+    box-shadow:0 2px 6px rgba(47,93,63,.22);
+  }
+  @media (max-width:520px){
+    .scale{grid-template-columns:repeat(5,1fr);gap:5px;}
+    .scale-opt{font-size:11px;padding:8px 3px;}
+  }
+
+  .field-label{display:block;font-size:12.5px;font-weight:650;text-transform:uppercase;
+    letter-spacing:.6px;color:var(--ink-faint);margin:2px 2px 7px;}
+  textarea{
+    width:100%;font-family:inherit;font-size:16px;line-height:1.5;color:var(--ink);
+    background:var(--surface-2);border:1.5px solid var(--line);border-radius:var(--radius-sm);
+    padding:12px 13px;min-height:92px;resize:vertical;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  textarea:focus{outline:none;border-color:var(--green-l);background:#fff;
+    box-shadow:0 0 0 3px rgba(111,160,128,.18);}
+  textarea::placeholder{color:var(--ink-faint);}
+
+  /* ---------- Fun slideshow ---------- */
+  body.mode-fun{background:#204a34;}
+  body.mode-fun .topbar{background:rgba(32,74,52,.86);border-bottom-color:rgba(255,255,255,.08);}
+  body.mode-fun .topbar h1,body.mode-fun .topbar .sub{color:#eaf3ec;}
+  body.mode-fun .topbar .dot{background:linear-gradient(160deg,#9ed3ac,#3f8a5c);}
+  body.mode-fun .content{padding:0;}
+  #fun.active{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;}
+  .stage{
+    flex:1 1 auto;position:relative;display:flex;flex-direction:column;
+    justify-content:flex-start;align-items:center;text-align:center;
+    padding:60px 24px 52px;cursor:pointer;user-select:none;-webkit-user-select:none;
+    background:radial-gradient(120% 90% at 50% 0%,#2f6b47 0%,#204a34 70%);
+    color:#f4f1e9;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;
+  }
+  .stage .progress{
+    position:absolute;top:calc(14px + var(--safe-t));left:0;right:0;
+    font-size:14px;font-weight:600;letter-spacing:2px;color:rgba(244,241,233,.72);
+  }
+  .stage .slide{max-width:26ch;margin:auto 0;animation:slideIn .28s cubic-bezier(.2,.7,.3,1);}
+  @keyframes slideIn{from{opacity:0;transform:translateY(14px) scale(.985);}to{opacity:1;transform:none;}}
+  .slide-q{
+    font-size:clamp(27px,4.6vw,46px);line-height:1.16;font-weight:750;
+    letter-spacing:-.5px;margin:0 auto;max-width:22ch;
+    text-shadow:0 2px 18px rgba(0,0,0,.18);
+  }
+  .reveal-btn{
+    margin:34px auto 0;font-family:inherit;font-weight:700;font-size:16px;
+    min-height:var(--tap);padding:12px 24px;border-radius:999px;cursor:pointer;
+    border:1.5px solid rgba(244,241,233,.55);background:rgba(255,255,255,.08);
+    color:#f4f1e9;touch-action:manipulation;
+    transition:transform .06s ease,background .15s ease;
+  }
+  .reveal-btn:active{transform:scale(.96);}
+  .slide-a{
+    margin:26px auto 0;max-width:30ch;font-size:clamp(17px,2.7vw,23px);
+    line-height:1.5;color:#eaf3ec;font-weight:500;
+    background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;padding:16px 18px;
+    animation:reveal .3s ease;
+  }
+  .slide-a.hidden{display:none;}
+  @keyframes reveal{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .stage .hint{
+    position:absolute;bottom:14px;left:0;right:0;
+    font-size:12.5px;color:rgba(244,241,233,.55);letter-spacing:.3px;
+    pointer-events:none;
+  }
+  .slide-nav{
+    flex:0 0 auto;display:flex;gap:10px;align-items:center;
+    padding:12px 16px calc(12px + var(--safe-b));background:#1b3f2c;
+  }
+  .slide-nav .nav-btn{
+    flex:1 1 0;min-height:52px;font-family:inherit;font-weight:700;font-size:16px;
+    border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.16);
+    background:rgba(255,255,255,.06);color:#f4f1e9;cursor:pointer;touch-action:manipulation;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    transition:transform .06s ease,background .15s ease,opacity .15s ease;
+  }
+  .slide-nav .nav-btn:active{transform:scale(.98);}
+  .slide-nav .nav-btn.next{background:var(--green);border-color:var(--green);flex:1.6 1 0;}
+  .slide-nav .nav-btn:disabled{opacity:.35;cursor:default;}
+
+  /* ---------- Tab bar ---------- */
+  .tabbar{
+    position:sticky;bottom:0;z-index:20;flex:0 0 auto;
+    display:flex;background:rgba(255,253,247,.94);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    border-top:1px solid var(--line);
+    padding-bottom:var(--safe-b);
+  }
+  body.mode-fun .tabbar{background:rgba(27,63,44,.96);border-top-color:rgba(255,255,255,.08);}
+  .tab{
+    flex:1 1 0;min-height:58px;border:none;background:none;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    color:var(--ink-faint);font-family:inherit;font-size:11.5px;font-weight:600;
+    padding:6px 4px;touch-action:manipulation;position:relative;
+    transition:color .15s ease;
+  }
+  .tab svg{width:23px;height:23px;}
+  .tab[aria-selected="true"]{color:var(--green-d);}
+  body.mode-fun .tab{color:rgba(234,243,236,.55);}
+  body.mode-fun .tab[aria-selected="true"]{color:#fff;}
+  .tab[aria-selected="true"]::before{
+    content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:34px;height:3px;border-radius:0 0 3px 3px;background:var(--green);
+  }
+  body.mode-fun .tab[aria-selected="true"]::before{background:#9ed3ac;}
+
+  /* ---------- Saved indicator ---------- */
+  .saved{
+    position:fixed;left:50%;transform:translateX(-50%) translateY(10px);
+    bottom:calc(74px + var(--safe-b));z-index:40;
+    background:var(--green-d);color:#fff;font-size:13.5px;font-weight:600;
+    padding:8px 16px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.18);
+    display:flex;align-items:center;gap:7px;
+    opacity:0;pointer-events:none;transition:opacity .22s ease, transform .22s ease;
+  }
+  .saved.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .saved svg{width:15px;height:15px;}
+
+  /* ---------- Export sheet ---------- */
+  .overlay{
+    position:fixed;inset:0;z-index:60;display:none;
+    align-items:flex-end;justify-content:center;
+    background:rgba(30,34,28,.42);
+  }
+  .overlay.show{display:flex;animation:fade .16s ease;}
+  .sheet{
+    width:100%;max-width:520px;background:var(--surface);
+    border-radius:20px 20px 0 0;padding:20px 20px calc(20px + var(--safe-b));
+    box-shadow:0 -8px 40px rgba(0,0,0,.2);
+    animation:sheetUp .24s cubic-bezier(.2,.7,.3,1);
+  }
+  @keyframes sheetUp{from{transform:translateY(30px);opacity:.6;}to{transform:none;opacity:1;}}
+  .sheet h2{margin:0 0 4px;font-size:19px;}
+  .sheet p{margin:0 0 16px;color:var(--ink-soft);font-size:14px;}
+  .sheet .row{display:flex;flex-direction:column;gap:10px;}
+  .sheet .btn{width:100%;min-height:52px;font-size:15px;justify-content:flex-start;padding:0 16px;}
+  .sheet .btn .lead{display:flex;align-items:center;gap:12px;}
+  .sheet .btn small{display:block;font-weight:500;color:var(--ink-faint);font-size:12.5px;margin-top:1px;}
+  .sheet .close{margin-top:6px;justify-content:center;color:var(--ink-soft);}
+
+  @media (min-width:560px){
+    .overlay{align-items:center;}
+    .sheet{border-radius:20px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;
+      transition-duration:0.001ms !important;scroll-behavior:auto !important;}
+  }
+</style>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot" aria-hidden="true"></span>
+      <div style="min-width:0">
+        <h1 id="section-title">Contextual</h1>
+        <div class="sub" id="section-sub">Site visit &middot; AWMC / Halve Waste</div>
+      </div>
+    </div>
+    <span class="spacer"></span>
+    <div class="actions">
+      <button class="btn" id="export-btn" type="button" aria-label="Export answers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m8 11 4 4 4-4"/><path d="M5 21h14"/></svg>
+        Export
+      </button>
+      <button class="btn ghost" id="clear-btn" type="button" aria-label="Clear all answers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg>
+        Clear
+      </button>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="wrap">
+      <section id="contextual" class="section" aria-label="Contextual questions"></section>
+      <section id="operational" class="section" aria-label="Operational questions"></section>
+    </div>
+    <section id="fun" class="section" aria-label="Fun myth-busting slideshow"></section>
+  </main>
+
+  <nav class="tabbar" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" data-tab="contextual" aria-selected="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Contextual
+    </button>
+    <button class="tab" role="tab" data-tab="operational" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Operational
+    </button>
+    <button class="tab" role="tab" data-tab="fun" aria-selected="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01"/><path d="M15 9h.01"/></svg>
+      Fun
+    </button>
+  </nav>
+</div>
+
+<div class="saved" id="saved" role="status" aria-live="polite">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+  Saved
+</div>
+
+<div class="overlay" id="export-sheet" role="dialog" aria-modal="true" aria-labelledby="export-title">
+  <div class="sheet">
+    <h2 id="export-title">Export visit notes</h2>
+    <p>Save a copy of everything you've captured today.</p>
+    <div class="row">
+      <button class="btn primary" id="dl-json" type="button"><span class="lead">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        <span>Download JSON<small>Structured data &mdash; keep or re-import later</small></span></span></button>
+      <button class="btn" id="dl-text" type="button"><span class="lead">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h8"/></svg>
+        <span>Download text summary<small>Readable notes to file or print</small></span></span></button>
+      <button class="btn" id="copy-text" type="button"><span class="lead">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span>Copy summary to clipboard<small>Paste into email or notes</small></span></span></button>
+      <button class="btn ghost close" id="export-close" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- Content ---------------- */
+  var QUESTIONS = {
+    contextual: [
+      "Who manages the AWMC / Halve Waste social media, and who creates the posts?",
+      "If you spotted a contamination trend today, roughly how long until a public message or campaign goes out?",
+      "When something needs budget to fix, what does that approval path look like — days, weeks, a committee cycle?",
+      "Is there a feedback loop from the sorting floor back to the education team, or does that knowledge stay on the floor?",
+      "How did the recent 3-bin transition rollout for the neighbouring council go?"
+    ],
+    operational: [
+      "The single most common contamination mistake is in the yellow bin.",
+      "Greasy or food-soiled cardboard is a frequent contamination problem.",
+      "Soft plastics in the recycling stream cause significant sorting issues.",
+      "Bagged recyclables are a major contamination source.",
+      "Contamination follows seasonal patterns (Christmas, green-waste spikes, etc.).",
+      "Contamination differs noticeably by suburb or area.",
+      "\"Wishcycling\" — people hoping an item is recyclable — is a widespread behaviour.",
+      "A single contaminated item can cause a whole load to be rejected.",
+      "Ground-level operations have challenges that a technology solution could genuinely help with.",
+      "There is a clear message staff wish every resident understood."
+    ],
+    fun: [
+      { q:"Be honest… does a greasy pizza box go in the yellow bin?",
+        a:"Nope — the greasy half ruins the batch. Clean cardboard recycles; oily cardboard goes to FOGO or red." },
+      { q:"I bag up my recycling nice and neat first — employee of the month, right?",
+        a:"Please stop 😅 — bagged recycling often goes straight to landfill because sorters can't open every bag." },
+      { q:"Takeaway coffee cup — recyclable, obviously?",
+        a:"Sadly no — the plastic lining is fused to the paper. Cup goes in red; the lid might be recyclable." },
+      { q:"Soft plastics — bread bags, cling wrap — yellow bin, yeah?",
+        a:"No! They tangle the machines and shut the line down. If you can scrunch it, it doesn't go in yellow." },
+      { q:"Come on… does the yellow bin stuff ACTUALLY get recycled?",
+        a:"Yes — when it's clean. Right now nearly 1 in 5 items in Albury yellow bins is contaminated and gets dumped." },
+      { q:"Surely one dirty item can't ruin a whole truckload?",
+        a:"Oh it can. One leaking bottle or bag of nappies can send an entire load to landfill." },
+      { q:"Where does my red bin ACTUALLY end up?",
+        a:"Straight to landfill, right here. Red-bin waste is 55% of everything we bury." },
+      { q:"Empty peanut butter jar — recyclable, right?",
+        a:"Yes! But rinse it first. A crusty half-full jar is contamination; ten seconds under the tap fixes it. 🏆" },
+      { q:"What's the WEIRDEST thing you've pulled out of a recycling bin?",
+        a:"(Let them tell you — this one gets the biggest laugh.)" },
+      { q:"What's the ONE thing you wish everyone knew about your job?",
+        a:"(Warm closer — let each person answer honestly.)" }
+    ]
+  };
+
+  var SECTION_META = {
+    contextual: { title:"Contextual", sub:"Open discussion · how the AWMC works" },
+    operational:{ title:"Operational", sub:"Rate + note · the sorting-floor reality" },
+    fun:        { title:"Myth-busting", sub:"Hold it up · tap to advance" }
+  };
+
+  var SCALE = [
+    { v:"strongly-agree",    label:"Strongly\nagree",    full:"Strongly agree" },
+    { v:"agree",             label:"Agree",              full:"Agree" },
+    { v:"neutral",           label:"Neutral",            full:"Neutral" },
+    { v:"disagree",          label:"Disagree",           full:"Disagree" },
+    { v:"strongly-disagree", label:"Strongly\ndisagree", full:"Strongly disagree" }
+  ];
+  var SCALE_LABEL = {};
+  SCALE.forEach(function(s){ SCALE_LABEL[s.v] = s.full; });
+
+  var STORAGE_KEY = "awmc-questionnaire-v1";
+
+  /* ---------------- State ---------------- */
+  var state = load();
+  function load(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){ return JSON.parse(raw); }
+    }catch(e){ /* corrupt or unavailable */ }
+    return {};
+  }
+  function persist(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); return true; }
+    catch(e){ return false; }
+  }
+  function getCtx(id){ return (state[id] && state[id].text) || ""; }
+  function getOp(id){ return state[id] || { rating:null, notes:"" }; }
+
+  /* ---------------- Saved indicator ---------------- */
+  var savedEl = document.getElementById("saved");
+  var savedTimer, saveDebounce;
+  function flashSaved(){
+    savedEl.classList.add("show");
+    clearTimeout(savedTimer);
+    savedTimer = setTimeout(function(){ savedEl.classList.remove("show"); }, 1200);
+  }
+  function saveNow(){ if(persist()){ flashSaved(); } }
+  function saveDebounced(){
+    clearTimeout(saveDebounce);
+    saveDebounce = setTimeout(saveNow, 350);
+  }
+
+  /* ---------------- Render: Contextual ---------------- */
+  function renderContextual(){
+    var host = document.getElementById("contextual");
+    host.appendChild(intro("Open discussion questions — how the AWMC actually runs: admin, budgeting, approvals, social-media ownership and delivery speed. Jot the conversation as it happens."));
+    QUESTIONS.contextual.forEach(function(text, i){
+      var id = "ctx-" + (i+1);
+      var card = el("div","card");
+      card.appendChild(qHead(i+1, text));
+      var ta = document.createElement("textarea");
+      ta.id = "ta-" + id;
+      ta.placeholder = "Type notes…";
+      ta.setAttribute("aria-label", "Notes for question " + (i+1));
+      ta.value = getCtx(id);
+      ta.addEventListener("input", function(){
+        state[id] = { text: ta.value };
+        saveDebounced();
+      });
+      ta.addEventListener("blur", saveNow);
+      card.appendChild(label("Notes", ta.id));
+      card.appendChild(ta);
+      host.appendChild(card);
+    });
+  }
+
+  /* ---------------- Render: Operational ---------------- */
+  function renderOperational(){
+    var host = document.getElementById("operational");
+    host.appendChild(intro("For each statement, tap where you land on the scale <b>and</b> add any colour in the notes — contamination, misconceptions and sorting-floor realities."));
+    QUESTIONS.operational.forEach(function(text, i){
+      var id = "op-" + (i+1);
+      var data = getOp(id);
+      var card = el("div","card");
+      card.appendChild(qHead(i+1, text));
+
+      var group = el("div","scale");
+      group.setAttribute("role","radiogroup");
+      group.setAttribute("aria-label","Agreement for statement " + (i+1));
+      SCALE.forEach(function(opt){
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "scale-opt";
+        b.setAttribute("role","radio");
+        b.textContent = opt.full;
+        b.setAttribute("aria-label", opt.full);
+        b.setAttribute("aria-checked", data.rating === opt.v ? "true" : "false");
+        b.addEventListener("click", function(){
+          var cur = getOp(id);
+          var next = (cur.rating === opt.v) ? null : opt.v; // tap again to clear
+          state[id] = { rating: next, notes: cur.notes || "" };
+          Array.prototype.forEach.call(group.children, function(c){
+            c.setAttribute("aria-checked", c === b && next ? "true" : "false");
+          });
+          saveNow();
+        });
+        group.appendChild(b);
+      });
+      card.appendChild(group);
+
+      var ta = document.createElement("textarea");
+      ta.id = "ta-" + id;
+      ta.placeholder = "Notes…";
+      ta.setAttribute("aria-label","Notes for statement " + (i+1));
+      ta.value = data.notes || "";
+      ta.addEventListener("input", function(){
+        var cur = getOp(id);
+        state[id] = { rating: cur.rating || null, notes: ta.value };
+        saveDebounced();
+      });
+      ta.addEventListener("blur", saveNow);
+      card.appendChild(label("Notes", ta.id));
+      card.appendChild(ta);
+      host.appendChild(card);
+    });
+  }
+
+  /* ---------------- Render: Fun slideshow ---------------- */
+  var slideIndex = 0;
+  var stageEl, slideQEl, slideAEl, revealBtn, progressEl, prevBtn, nextBtn;
+  function renderFun(){
+    var host = document.getElementById("fun");
+
+    stageEl = el("div","stage");
+    stageEl.setAttribute("role","group");
+    stageEl.setAttribute("aria-label","Myth-busting slide");
+
+    progressEl = el("div","progress");
+    stageEl.appendChild(progressEl);
+
+    var slide = el("div","slide");
+    slideQEl = el("div","slide-q");
+    revealBtn = document.createElement("button");
+    revealBtn.type = "button";
+    revealBtn.className = "reveal-btn";
+    revealBtn.textContent = "Reveal answer";
+    slideAEl = el("div","slide-a hidden");
+    slide.appendChild(slideQEl);
+    slide.appendChild(revealBtn);
+    slide.appendChild(slideAEl);
+    stageEl.appendChild(slide);
+
+    var hint = el("div","hint");
+    hint.textContent = "Tap right → next · tap left ← back · reveal the answer below";
+    stageEl.appendChild(hint);
+
+    // reveal toggle
+    revealBtn.addEventListener("click", function(ev){
+      ev.stopPropagation();
+      toggleReveal();
+    });
+    slideAEl.addEventListener("click", function(ev){ ev.stopPropagation(); });
+
+    // tap zones on the stage
+    stageEl.addEventListener("click", function(ev){
+      var rect = stageEl.getBoundingClientRect();
+      var x = ev.clientX - rect.left;
+      if(x < rect.width * 0.28){ go(-1); } else { go(1); }
+    });
+
+    // nav bar
+    var nav = el("div","slide-nav");
+    prevBtn = navButton("prev","←  Back");
+    nextBtn = navButton("next","Next  →");
+    prevBtn.addEventListener("click", function(){ go(-1); });
+    nextBtn.addEventListener("click", function(){ go(1); });
+    nav.appendChild(prevBtn);
+    nav.appendChild(nextBtn);
+
+    host.appendChild(stageEl);
+    host.appendChild(nav);
+    showSlide(0, false);
+  }
+  function navButton(cls, text){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "nav-btn " + cls;
+    b.textContent = text;
+    return b;
+  }
+  function toggleReveal(){
+    var hidden = slideAEl.classList.toggle("hidden");
+    revealBtn.textContent = hidden ? "Reveal answer" : "Hide answer";
+    revealBtn.setAttribute("aria-expanded", hidden ? "false" : "true");
+  }
+  function go(dir){
+    var n = slideIndex + dir;
+    if(n < 0 || n > QUESTIONS.fun.length - 1) return;
+    showSlide(n, true);
+  }
+  function showSlide(n, animate){
+    slideIndex = n;
+    var item = QUESTIONS.fun[n];
+    slideQEl.textContent = item.q;
+    slideAEl.textContent = item.a;
+    slideAEl.classList.add("hidden");
+    revealBtn.textContent = "Reveal answer";
+    revealBtn.setAttribute("aria-expanded","false");
+    progressEl.textContent = (n+1) + " / " + QUESTIONS.fun.length;
+    prevBtn.disabled = (n === 0);
+    nextBtn.disabled = (n === QUESTIONS.fun.length - 1);
+    if(animate){
+      var slide = slideQEl.parentNode;
+      slide.style.animation = "none";
+      // force reflow so the animation restarts
+      void slide.offsetWidth;
+      slide.style.animation = "";
+    }
+  }
+
+  /* ---------------- Small DOM helpers ---------------- */
+  function el(tag, cls){ var e = document.createElement(tag); if(cls) e.className = cls; return e; }
+  function qHead(num, text){
+    var head = el("div","q-head");
+    var n = el("span","q-num"); n.textContent = num;
+    var p = el("p","q-text"); p.textContent = text;
+    head.appendChild(n); head.appendChild(p);
+    return head;
+  }
+  function label(text, forId){
+    var l = el("label","field-label"); l.textContent = text; if(forId) l.setAttribute("for", forId);
+    return l;
+  }
+  function intro(html){
+    var p = el("p","intro"); p.innerHTML = html; return p;
+  }
+
+  /* ---------------- Tabs ---------------- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+  var titleEl = document.getElementById("section-title");
+  var subEl = document.getElementById("section-sub");
+  function selectTab(name){
+    tabs.forEach(function(t){ t.setAttribute("aria-selected", t.dataset.tab === name ? "true" : "false"); });
+    ["contextual","operational","fun"].forEach(function(s){
+      document.getElementById(s).classList.toggle("active", s === name);
+    });
+    document.body.classList.toggle("mode-fun", name === "fun");
+    var meta = SECTION_META[name];
+    titleEl.textContent = meta.title;
+    subEl.textContent = meta.sub;
+    document.querySelector(".content").scrollTop = 0;
+    window.scrollTo(0,0);
+  }
+  tabs.forEach(function(t){
+    t.addEventListener("click", function(){ selectTab(t.dataset.tab); });
+  });
+
+  // keyboard arrows advance the slideshow when it's on screen
+  document.addEventListener("keydown", function(ev){
+    if(!document.body.classList.contains("mode-fun")) return;
+    if(ev.key === "ArrowRight"){ go(1); }
+    else if(ev.key === "ArrowLeft"){ go(-1); }
+    else if(ev.key === " " || ev.key === "Enter"){ /* reveal on space */ toggleReveal(); ev.preventDefault(); }
+  });
+
+  /* ---------------- Export ---------------- */
+  function pad(n){ return n < 10 ? "0"+n : ""+n; }
+  function stamp(d){
+    return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  }
+  function stampTime(d){
+    return stamp(d)+" "+pad(d.getHours())+":"+pad(d.getMinutes());
+  }
+  function buildJSON(){
+    var now = new Date();
+    return {
+      app: "AWMC Site Visit Questionnaire",
+      version: 1,
+      exportedAt: now.toISOString(),
+      contextual: QUESTIONS.contextual.map(function(q,i){
+        var id = "ctx-"+(i+1);
+        return { id:id, question:q, answer:getCtx(id) };
+      }),
+      operational: QUESTIONS.operational.map(function(q,i){
+        var id = "op-"+(i+1);
+        var d = getOp(id);
+        return { id:id, question:q, rating:d.rating||null,
+                 ratingLabel: d.rating ? SCALE_LABEL[d.rating] : null,
+                 notes: d.notes||"" };
+      }),
+      funReference: QUESTIONS.fun.map(function(item,i){
+        return { id:"fun-"+(i+1), question:item.q, answer:item.a };
+      })
+    };
+  }
+  function buildText(){
+    var now = new Date();
+    var L = [];
+    L.push("AWMC SITE VISIT QUESTIONNAIRE");
+    L.push("Halve Waste · Albury Waste Management Centre");
+    L.push("Exported: " + stampTime(now));
+    L.push("");
+    L.push("========================================");
+    L.push("CONTEXTUAL — how the AWMC works");
+    L.push("========================================");
+    QUESTIONS.contextual.forEach(function(q,i){
+      var a = getCtx("ctx-"+(i+1)).trim();
+      L.push("");
+      L.push((i+1)+". "+q);
+      L.push("   "+(a ? a.replace(/\n/g,"\n   ") : "(no answer)"));
+    });
+    L.push("");
+    L.push("========================================");
+    L.push("OPERATIONAL — contamination & sorting floor");
+    L.push("========================================");
+    QUESTIONS.operational.forEach(function(q,i){
+      var d = getOp("op-"+(i+1));
+      var notes = (d.notes||"").trim();
+      L.push("");
+      L.push((i+1)+". "+q);
+      L.push("   Rating: "+(d.rating ? SCALE_LABEL[d.rating] : "(not rated)"));
+      L.push("   Notes:  "+(notes ? notes.replace(/\n/g,"\n           ") : "(none)"));
+    });
+    L.push("");
+    L.push("========================================");
+    L.push("FUN — myth-busting slides (reference only)");
+    L.push("========================================");
+    QUESTIONS.fun.forEach(function(item,i){
+      L.push("");
+      L.push((i+1)+". Q: "+item.q);
+      L.push("   A: "+item.a);
+    });
+    L.push("");
+    return L.join("\n");
+  }
+  function download(filename, text, mime){
+    try{
+      var blob = new Blob([text], { type: mime });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1500);
+    }catch(e){
+      window.alert("Sorry, this browser blocked the download. Try the Copy option instead.");
+    }
+  }
+
+  var sheet = document.getElementById("export-sheet");
+  function openSheet(){ sheet.classList.add("show"); }
+  function closeSheet(){ sheet.classList.remove("show"); }
+  document.getElementById("export-btn").addEventListener("click", openSheet);
+  document.getElementById("export-close").addEventListener("click", closeSheet);
+  sheet.addEventListener("click", function(ev){ if(ev.target === sheet) closeSheet(); });
+
+  document.getElementById("dl-json").addEventListener("click", function(){
+    download("awmc-visit-"+stamp(new Date())+".json",
+             JSON.stringify(buildJSON(), null, 2), "application/json");
+    closeSheet();
+  });
+  document.getElementById("dl-text").addEventListener("click", function(){
+    download("awmc-visit-"+stamp(new Date())+".txt", buildText(), "text/plain");
+    closeSheet();
+  });
+  document.getElementById("copy-text").addEventListener("click", function(){
+    var text = buildText();
+    var done = function(ok){
+      closeSheet();
+      savedEl.querySelector("svg").nextSibling && (savedEl.lastChild.textContent = ok ? " Copied" : " Copy failed");
+      flashSaved();
+      setTimeout(function(){ savedEl.lastChild.textContent = " Saved"; }, 1400);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ fallbackCopy(text, done); });
+    }else{
+      fallbackCopy(text, done);
+    }
+  });
+  function fallbackCopy(text, cb){
+    try{
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed"; ta.style.top = "-1000px";
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      var ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      cb(ok);
+    }catch(e){ cb(false); }
+  }
+
+  /* ---------------- Clear all ---------------- */
+  document.getElementById("clear-btn").addEventListener("click", function(){
+    var hasData = Object.keys(state).length > 0;
+    if(!hasData){ window.alert("Nothing to clear yet — no answers saved."); return; }
+    if(window.confirm("Clear ALL answers? This can't be undone.")){
+      state = {};
+      try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+      // reset every field in place
+      QUESTIONS.contextual.forEach(function(_,i){
+        var ta = document.getElementById("ta-ctx-"+(i+1)); if(ta) ta.value = "";
+      });
+      QUESTIONS.operational.forEach(function(_,i){
+        var ta = document.getElementById("ta-op-"+(i+1)); if(ta) ta.value = "";
+        var group = ta ? ta.parentNode.querySelector(".scale") : null;
+        if(group) Array.prototype.forEach.call(group.children, function(c){ c.setAttribute("aria-checked","false"); });
+      });
+      savedEl.lastChild.textContent = " Cleared";
+      flashSaved();
+      setTimeout(function(){ savedEl.lastChild.textContent = " Saved"; }, 1400);
+    }
+  });
+
+  /* ---------------- Boot ---------------- */
+  renderContextual();
+  renderOperational();
+  renderFun();
+  selectTab("contextual");
+
+  /* ---------------- Service worker ---------------- */
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("./sw.js").catch(function(){ /* offline-first still works from cache */ });
+    });
+  }
+})();
+</script>
